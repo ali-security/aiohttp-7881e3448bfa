@@ -1,4 +1,5 @@
 import asyncio
+import sys
 from unittest import mock
 
 import pytest
@@ -18,6 +19,10 @@ async def test_simple_server(aiohttp_raw_server, aiohttp_client) -> None:
     assert txt == "/path/to"
 
 
+@pytest.mark.skipif(
+    sys.platform not in ("linux",) and sys.version_info >= (3, 11),
+    reason="pure-Python parser times out on Windows/macOS under Python 3.11+",
+)
 @pytest.mark.xfail(
     not helpers.NO_EXTENSIONS,
     raises=client.ServerDisconnectedError,
